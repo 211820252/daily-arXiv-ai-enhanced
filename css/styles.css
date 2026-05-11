@@ -426,11 +426,47 @@ header {
 .filter-label-container {
   display: flex;
   align-items: center;
-  max-width: 1440px; /* 与main容器的max-width相同 */
+  max-width: 1440px;
   width: 100%;
-  padding: 10px 24px 5px 24px; /* 与category标签容器保持一致 */
-  margin: 0 auto; /* 居中显示 */
+  padding: 6px 24px;
+  margin: 0 auto;
   position: relative;
+}
+
+.filter-search-inline {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.filter-search-inline input {
+  width: 140px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  background: var(--card-bg-color, #fff);
+  color: var(--text-primary, #1a202c);
+}
+
+.filter-search-inline input:focus {
+  border-color: var(--primary-color, #667eea);
+}
+
+.filter-search-inline .clear-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+  border: none;
+  background: transparent;
+  color: #999;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .category-button {
@@ -999,6 +1035,24 @@ main {
   background: transparent !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+/* 有论文数据的日期高亮 */
+.flatpickr-day.has-papers {
+  background: var(--gradient-light, linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%));
+  border-radius: 4px;
+  font-weight: 600;
+  color: var(--accent-color, #6d2dad);
+}
+
+.flatpickr-day.has-papers:hover {
+  background: var(--primary-color, #667eea);
+  color: #fff;
+}
+
+.flatpickr-day.has-papers.selected {
+  background: var(--primary-color, #667eea);
+  color: #fff;
 }
 
 .flatpickr-months {
