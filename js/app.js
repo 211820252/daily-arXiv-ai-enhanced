@@ -726,7 +726,7 @@ async function fetchAvailableDates() {
 }
 
 function buildYearSelect(fp) {
-  const wrapper = fp.currentMonthElement.querySelector('.numInputWrapper');
+  const wrapper = fp.calendarContainer.querySelector('.numInputWrapper');
   if (!wrapper) return;
   const input = wrapper.querySelector('.cur-year');
   if (!input || wrapper.querySelector('.cur-year-select')) return;

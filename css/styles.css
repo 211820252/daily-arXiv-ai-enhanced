@@ -1185,17 +1185,16 @@ main {
   max-width: 100% !important;
   display: flex !important;
   flex-wrap: wrap !important;
-  /* justify-content: flex-start !important; */
   padding: 0 !important;
 }
 
 .flatpickr-day {
-  margin: 2px;
+  margin: 2px 1px !important;
   height: 40px !important;
   line-height: 40px !important;
   border-radius: 8px !important;
-  width: calc(100% / 7 - 4px) !important;
-  flex: 0 0 calc(100% / 7 - 4px) !important;
+  width: calc(100% / 7 - 2px) !important;
+  flex: 0 0 calc(100% / 7 - 2px) !important;
   display: inline-flex !important;
   justify-content: center !important;
   align-items: center !important;
