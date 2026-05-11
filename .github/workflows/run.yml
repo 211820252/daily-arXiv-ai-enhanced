@@ -180,20 +180,6 @@ jobs:
         fi
         echo "Markdown转换完成 / Markdown conversion completed"
 
-    - name: Update file list
-      if: steps.dedup_check.outputs.has_new_content == 'true'
-      run: |
-        IS_TEST="${{ steps.crawl_step.outputs.is_test }}"
-
-        if [ "$IS_TEST" = "true" ]; then
-          echo "🧪 Test mode: skipping file list update"
-          exit 0
-        fi
-
-        echo "更新文件列表... / Updating file list..."
-        ls data/*_AI_enhanced_*.jsonl | grep -v _test | sed 's|data/||' > assets/file-list.txt
-        echo "文件列表更新完成 / File list updated"
-
     - name: Generate password hash and inject into config
       if: steps.dedup_check.outputs.has_new_content == 'true'
       run: |
@@ -370,7 +356,11 @@ jobs:
 
         mkdir -p data assets
         cp -r /tmp/data_files/data/* data/ 2>/dev/null || true
-        cp /tmp/data_files/assets/file-list.txt assets/ 2>/dev/null || true
+
+        # 在 data 分支中重新生成完整的文件列表（包含所有历史文件）
+        ls data/*_AI_enhanced_*.jsonl 2>/dev/null | grep -v _test | sed 's|data/||' > assets/file-list.txt
+        echo "文件列表已更新，共 $(wc -l < assets/file-list.txt) 个文件"
+
 
         git add data/* 2>/dev/null || true
         git add assets/file-list.txt 2>/dev/null || true

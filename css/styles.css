@@ -1078,36 +1078,87 @@ main {
 
 .flatpickr-months {
   width: 100% !important;
-  padding: 0;
-  margin-bottom: 10px;
+  padding: 6px 0 12px;
+  margin-bottom: 4px;
   background-color: transparent !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .flatpickr-month {
   background-color: transparent !important;
   color: var(--text-color) !important;
+  height: auto !important;
 }
 
 .flatpickr-current-month {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
   padding: 0 !important;
   font-size: 18px !important;
   font-weight: 600 !important;
+  position: static !important;
+  width: auto !important;
+  left: auto !important;
 }
 
-.flatpickr-monthDropdown-months {
+.flatpickr-current-month .numInputWrapper {
+  width: 52px !important;
+}
+
+.flatpickr-current-month .numInputWrapper input.cur-year {
+  font-size: 18px !important;
   font-weight: 600 !important;
+  padding: 2px 0 !important;
+  text-align: center !important;
   color: var(--text-color) !important;
 }
 
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--text-color) !important;
+  padding: 2px 4px !important;
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
+  border-radius: 6px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  cursor: pointer !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+  border-color: var(--border-color, #e2e8f0) !important;
+}
+
 .flatpickr-prev-month, .flatpickr-next-month {
-  padding: 5px !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
   fill: var(--primary-color) !important;
   color: var(--primary-color) !important;
+  border-radius: 8px !important;
+  position: static !important;
+  flex-shrink: 0 !important;
+}
+
+.flatpickr-prev-month {
+  order: -1 !important;
 }
 
 .flatpickr-prev-month:hover, .flatpickr-next-month:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-  border-radius: 50% !important;
+  background-color: rgba(102, 126, 234, 0.1) !important;
+}
+
+.flatpickr-prev-month svg, .flatpickr-next-month svg {
+  width: 18px !important;
+  height: 18px !important;
 }
 
 .flatpickr-weekdays {
