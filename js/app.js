@@ -101,8 +101,8 @@ function loadUserKeywords() {
   if (savedKeywords) {
     try {
       userKeywords = JSON.parse(savedKeywords);
-      // 默认激活所有关键词
-      activeKeywords = [...userKeywords];
+      // 默认不激活关键词，展示全部论文
+      activeKeywords = [];
     } catch (error) {
       console.error('解析关键词失败:', error);
       userKeywords = [];
@@ -123,8 +123,8 @@ function loadUserAuthors() {
   if (savedAuthors) {
     try {
       userAuthors = JSON.parse(savedAuthors);
-      // 默认激活所有作者
-      activeAuthors = [...userAuthors];
+      // 默认不激活作者过滤，展示全部论文
+      activeAuthors = [];
     } catch (error) {
       console.error('解析作者失败:', error);
       userAuthors = [];
