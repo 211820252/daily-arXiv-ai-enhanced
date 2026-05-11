@@ -725,6 +725,31 @@ async function fetchAvailableDates() {
   }
 }
 
+function buildYearSelect(fp) {
+  const wrapper = fp.currentMonthElement.querySelector('.numInputWrapper');
+  if (!wrapper) return;
+  const input = wrapper.querySelector('.cur-year');
+  if (!input || wrapper.querySelector('.cur-year-select')) return;
+
+  const select = document.createElement('select');
+  select.className = 'cur-year cur-year-select';
+  const currentYear = parseInt(input.value) || new Date().getFullYear();
+  const minYear = currentYear - 10;
+  const maxYear = currentYear + 10;
+  for (let y = minYear; y <= maxYear; y++) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y + '年';
+    if (y === currentYear) opt.selected = true;
+    select.appendChild(opt);
+  }
+  select.addEventListener('change', function() {
+    fp.jumpToDate(new Date(parseInt(this.value), fp.currentMonth, 1));
+  });
+  input.style.display = 'none';
+  input.parentNode.insertBefore(select, input);
+}
+
 function initDatePicker() {
   const datepickerInput = document.getElementById('datepicker');
   
@@ -754,6 +779,15 @@ function initDatePicker() {
       if (availableSet.has(dateStr)) {
         dayElem.classList.add('has-papers');
       }
+    },
+    onReady: function(selectedDates, dateStr, instance) {
+      buildYearSelect(instance);
+    },
+    onMonthChange: function(selectedDates, dateStr, instance) {
+      buildYearSelect(instance);
+    },
+    onYearChange: function(selectedDates, dateStr, instance) {
+      buildYearSelect(instance);
     },
     onChange: function(selectedDates, dateStr) {
       if (isRangeMode && selectedDates.length === 2) {
