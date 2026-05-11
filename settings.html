@@ -143,6 +143,32 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="settings-section">
+                        <div class="keyword-section-title">
+                            <div class="keyword-section-title-left">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 3L13.76 8.24L19 10L13.76 11.76L12 17L10.24 11.76L5 10L10.24 8.24L12 3ZM19 14L19.88 16.62L22.5 17.5L19.88 18.38L19 21L18.12 18.38L15.5 17.5L18.12 16.62L19 14Z" fill="currentColor"/>
+                                </svg>
+                                Full Paper Summary API
+                            </div>
+                        </div>
+                        <div class="settings-card">
+                            <div class="settings-item">
+                                <label for="llmApiBaseUrl">OpenAI-compatible Base URL</label>
+                                <input type="text" id="llmApiBaseUrl" class="settings-input" placeholder="https://api.openai.com/v1">
+                            </div>
+                            <div class="settings-item">
+                                <label for="llmModel">Model</label>
+                                <input type="text" id="llmModel" class="settings-input" placeholder="gpt-4.1">
+                            </div>
+                            <div class="settings-item">
+                                <label for="llmApiKey">API Key</label>
+                                <input type="password" id="llmApiKey" class="settings-input" placeholder="Stored locally in this browser">
+                                <p class="settings-hint">用于详情页“AI Full Paper Summary”。Key 只保存在本机浏览器 localStorage；公开部署时建议改成自己的后端代理。</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="settings-actions">
