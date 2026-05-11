@@ -1043,19 +1043,6 @@ main {
   border-radius: 8px;
   font-weight: 700;
   color: var(--primary-color, #667eea);
-  position: relative;
-}
-
-.flatpickr-day.has-papers::after {
-  content: '';
-  position: absolute;
-  bottom: 3px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--accent-color, #6d2dad);
 }
 
 .flatpickr-day.has-papers:hover {
@@ -1063,118 +1050,129 @@ main {
   color: #fff;
 }
 
-.flatpickr-day.has-papers:hover::after {
-  background: #fff;
-}
-
 .flatpickr-day.has-papers.selected {
   background: var(--primary-color, #667eea);
   color: #fff;
 }
 
-.flatpickr-day.has-papers.selected::after {
-  background: #fff;
-}
-
 .flatpickr-months {
   width: 100% !important;
-  padding: 6px 0 12px;
-  margin-bottom: 4px;
-  background-color: transparent !important;
+  padding: 8px 0 14px;
+  background: transparent !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-content: space-between !important;
+  gap: 0 !important;
 }
 
 .flatpickr-month {
-  background-color: transparent !important;
-  color: var(--text-color) !important;
+  background: transparent !important;
   height: auto !important;
+  flex: 1 !important;
 }
 
 .flatpickr-current-month {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 6px !important;
+  gap: 8px !important;
   padding: 0 !important;
-  font-size: 18px !important;
+  font-size: 20px !important;
   font-weight: 600 !important;
   position: static !important;
   width: auto !important;
   left: auto !important;
 }
 
+/* 年份在左 */
 .flatpickr-current-month .numInputWrapper {
-  width: 52px !important;
+  width: auto !important;
+  order: 1;
 }
 
 .flatpickr-current-month .numInputWrapper input.cur-year {
-  font-size: 18px !important;
+  font-size: 20px !important;
   font-weight: 600 !important;
-  padding: 2px 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
   text-align: center !important;
   color: var(--text-color) !important;
+  border: none !important;
+  background: transparent !important;
+  width: 48px !important;
+  -moz-appearance: textfield !important;
 }
 
+.flatpickr-current-month .numInputWrapper input.cur-year::-webkit-inner-spin-button,
+.flatpickr-current-month .numInputWrapper input.cur-year::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+/* 月份在右 */
 .flatpickr-current-month .flatpickr-monthDropdown-months {
-  font-size: 18px !important;
+  font-size: 20px !important;
   font-weight: 600 !important;
   color: var(--text-color) !important;
-  padding: 2px 4px !important;
-  appearance: auto !important;
-  -webkit-appearance: auto !important;
-  border-radius: 6px !important;
-  border: 1px solid transparent !important;
+  padding: 0 2px !important;
+  margin: 0 !important;
+  border: none !important;
   background: transparent !important;
   cursor: pointer !important;
+  order: 2;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  text-align: center !important;
+  text-align-last: center !important;
 }
 
-.flatpickr-current-month .flatpickr-monthDropdown-months:hover {
-  border-color: var(--border-color, #e2e8f0) !important;
-}
-
+/* 左右箭头：统一风格，放在两端 */
 .flatpickr-prev-month, .flatpickr-next-month {
-  width: 32px !important;
-  height: 32px !important;
+  width: 36px !important;
+  height: 36px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   padding: 0 !important;
-  fill: var(--primary-color) !important;
-  color: var(--primary-color) !important;
-  border-radius: 8px !important;
+  fill: var(--text-secondary, #64748b) !important;
+  color: var(--text-secondary, #64748b) !important;
+  border-radius: 50% !important;
   position: static !important;
   flex-shrink: 0 !important;
-}
-
-.flatpickr-prev-month {
-  order: -1 !important;
+  transition: background 0.15s !important;
 }
 
 .flatpickr-prev-month:hover, .flatpickr-next-month:hover {
-  background-color: rgba(102, 126, 234, 0.1) !important;
+  background: rgba(0, 0, 0, 0.06) !important;
 }
 
 .flatpickr-prev-month svg, .flatpickr-next-month svg {
-  width: 18px !important;
-  height: 18px !important;
+  width: 20px !important;
+  height: 20px !important;
 }
 
 .flatpickr-weekdays {
   width: 100% !important;
   background-color: transparent !important;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
+}
+
+.flatpickr-weekdaycontainer {
+  display: flex !important;
+  width: 100% !important;
 }
 
 .flatpickr-weekday {
   height: 28px;
   line-height: 28px;
-  flex: 1;
+  flex: 1 1 calc(100% / 7) !important;
+  width: calc(100% / 7) !important;
+  text-align: center !important;
   background-color: transparent !important;
   color: var(--text-secondary) !important;
   font-weight: 500 !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
 }
 
 .flatpickr-days {
