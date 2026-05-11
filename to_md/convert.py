@@ -1,6 +1,7 @@
 import json
 import argparse
 import os
+import re
 from itertools import count
 
 if __name__ == "__main__":
@@ -8,6 +9,11 @@ if __name__ == "__main__":
     parser.add_argument("--data", type=str, help="Path to the jsonline file")
     args = parser.parse_args()
     data = []
+
+    # 从输入文件名推导输出 md 文件名
+    # 2026-05-11_AI_enhanced_Chinese.jsonl → 2026-05-11.md
+    # 2026-05-11_test_AI_enhanced_Chinese.jsonl → 2026-05-11_test.md
+    md_file = re.sub(r'_AI_enhanced_.*\.jsonl$', '.md', os.path.basename(args.data))
     preference = os.environ.get('CATEGORIES', 'cs.CV, cs.CL').split(',')
     preference = list(map(lambda x: x.strip(), preference))
     def rank(cate):
@@ -68,5 +74,5 @@ if __name__ == "__main__":
                     )
                 )
         markdown += "\n\n".join(papers)
-    with open(args.data.split('_')[0] + '.md', "w") as f:
+    with open(md_file, "w") as f:
         f.write(markdown)

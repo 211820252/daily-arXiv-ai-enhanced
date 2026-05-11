@@ -60,21 +60,22 @@ def save_papers_data(papers, file_path):
         print(f"Error saving {file_path}: {e}", file=sys.stderr)
         return False
 
-def perform_deduplication():
+def perform_deduplication(data_file=None):
     """
     执行多日去重：删除与历史多日重复的论文条目，保留新内容
     Perform deduplication over multiple past days
-    
+
+    Args:
+        data_file: 可选，自定义数据文件路径。默认使用今日文件。
+
     Returns:
         str: 去重状态 / Deduplication status
-             - "has_new_content": 有新内容 / Has new content
-             - "no_new_content": 无新内容 / No new content  
-             - "no_data": 无数据 / No data
-             - "error": 处理错误 / Processing error
     """
 
     today = datetime.now().strftime("%Y-%m-%d")
-    today_file = f"../data/{today}.jsonl"
+    if data_file is None:
+        data_file = f"../data/{today}.jsonl"
+    today_file = data_file
     history_days = 7  # 向前追溯几天的数据进行对比
 
     if not os.path.exists(today_file):
@@ -132,17 +133,21 @@ def main():
     """
     检查去重状态并返回相应的退出码
     Check deduplication status and return corresponding exit code
-    
+
     退出码含义 / Exit code meanings:
     0: 有新内容，继续处理 / Has new content, continue processing
     1: 无新内容，停止工作流 / No new content, stop workflow
     2: 处理错误 / Processing error
+
+    Usage: python check_stats.py [data_file]
     """
-    
+
+    data_file = sys.argv[1] if len(sys.argv) > 1 else None
+
     print("正在执行去重检查... / Performing intelligent deduplication check...", file=sys.stderr)
-    
+
     # 执行去重处理 / Perform deduplication processing
-    dedup_status = perform_deduplication()
+    dedup_status = perform_deduplication(data_file)
     
     if dedup_status == "has_new_content":
         print("✅ 去重完成，发现新内容，继续工作流 / Deduplication completed, new content found, continue workflow", file=sys.stderr)
