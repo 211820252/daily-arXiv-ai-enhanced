@@ -10,6 +10,8 @@ function initSettings() {
   loadKeywordPreferences();
   // 作者偏好设置
   loadAuthorPreferences();
+  // LLM API 端点设置
+  loadEndpointSetting();
 }
 
 // 从localStorage加载关键词偏好
@@ -76,6 +78,45 @@ function showEmptyTagMessage() {
   emptyMessage.className = 'empty-tag-message';
   emptyMessage.textContent = 'No keywords added yet. Add some keywords below.';
   selectedKeywordsContainer.appendChild(emptyMessage);
+}
+
+// 加载 LLM API 端点设置
+function loadEndpointSetting() {
+  const endpointInput = document.getElementById('endpointInput');
+  const endpointStatus = document.getElementById('endpointStatus');
+  const saved = localStorage.getItem('fullSummaryEndpoint');
+  if (saved) {
+    endpointInput.value = saved;
+    endpointStatus.textContent = 'Endpoint configured. Full paper summary is ready.';
+    endpointStatus.style.color = '#27ae60';
+  }
+}
+
+// 保存 LLM API 端点
+function saveEndpointSetting() {
+  const endpointInput = document.getElementById('endpointInput');
+  const endpointStatus = document.getElementById('endpointStatus');
+  const endpoint = endpointInput.value.trim();
+
+  if (!endpoint) {
+    localStorage.removeItem('fullSummaryEndpoint');
+    endpointStatus.textContent = 'Endpoint removed. Full paper summary will use default.';
+    endpointStatus.style.color = '#e67e22';
+    return;
+  }
+
+  // 简单校验 URL 格式
+  try {
+    new URL(endpoint);
+  } catch (e) {
+    endpointStatus.textContent = 'Invalid URL format. Please check.';
+    endpointStatus.style.color = '#e74c3c';
+    return;
+  }
+
+  localStorage.setItem('fullSummaryEndpoint', endpoint);
+  endpointStatus.textContent = 'Endpoint saved. Full paper summary is ready.';
+  endpointStatus.style.color = '#27ae60';
 }
 
 // 显示空作者标签消息
@@ -303,6 +344,23 @@ function initEventListeners() {
   // 重置设置按钮
   const resetSettingsButton = document.getElementById('resetSettings');
   resetSettingsButton.addEventListener('click', resetSettings);
+
+  // 端点保存按钮
+  const saveEndpointBtn = document.getElementById('saveEndpoint');
+  if (saveEndpointBtn) {
+    saveEndpointBtn.addEventListener('click', saveEndpointSetting);
+  }
+
+  // 端点输入框回车事件
+  const endpointInput = document.getElementById('endpointInput');
+  if (endpointInput) {
+    endpointInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveEndpointSetting();
+      }
+    });
+  }
 }
 
 // 复制关键词到剪切板

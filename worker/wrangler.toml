@@ -1,0 +1,8 @@
+name = "arxiv-summary-proxy"
+main = "worker.js"
+compatibility_date = "2025-05-01"
+
+# 免费计划：每天 10 万次请求，足够个人使用
+# 如果需要限制调用频率，取消下面注释：
+# [triggers]
+# crons = []

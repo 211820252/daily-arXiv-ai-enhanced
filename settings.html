@@ -146,6 +146,32 @@
 
                 </div>
 
+                    <div class="settings-section">
+                        <div class="keyword-section-title">
+                            <div class="keyword-section-title-left">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 12h2v5H7v-5zm4-3h2v8h-2V9zm4 5h2v3h-2v-3z" fill="currentColor"/>
+                                </svg>
+                                Full Paper AI Summary
+                            </div>
+                        </div>
+                        <div class="settings-card">
+                            <div class="settings-item">
+                                <p style="margin: 0 0 12px 0; color: var(--text-secondary); font-size: 14px;">
+                                    To enable full paper AI summarization, deploy a Cloudflare Worker and paste the endpoint URL below.
+                                    See <code>worker/worker.js</code> for the worker script and deployment instructions.
+                                </p>
+                                <div class="tag-input-container">
+                                    <input type="url" id="endpointInput" class="settings-input" placeholder="https://your-worker.workers.dev" style="flex: 1;">
+                                    <button id="saveEndpoint" class="add-tag-button">Save</button>
+                                </div>
+                                <p id="endpointStatus" style="margin: 8px 0 0 0; font-size: 13px; color: var(--text-secondary);"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div class="settings-actions">
                     <button id="resetSettings" class="button">Reset to Default</button>
                     <button id="saveSettings" class="button primary">Save Settings</button>

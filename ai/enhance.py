@@ -4,8 +4,6 @@ import sys
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
-from queue import Queue
-from threading import Lock
 # INSERT_YOUR_CODE
 import requests
 
@@ -168,8 +166,19 @@ def process_single_item(chain, item: Dict, language: str) -> Dict:
 
 def process_all_items(data: List[Dict], model_name: str, language: str, max_workers: int) -> List[Dict]:
     """并行处理所有数据项"""
-    llm = ChatOpenAI(model=model_name).with_structured_output(Structure, method="function_calling")
-    print('Connect to:', model_name, file=sys.stderr)
+    raw_base = os.environ.get("OPENAI_BASE_URL", "")
+    # OpenAI Python 客户端会在 base_url 后拼接 /chat/completions，
+    # 所以必须确保 base_url 以 /v1 结尾。DeepSeek 完整路径是 https://api.deepseek.com/v1
+    if raw_base and not raw_base.rstrip('/').endswith('/v1'):
+        raw_base = raw_base.rstrip('/') + '/v1'
+
+    llm = ChatOpenAI(
+        model=model_name,
+        openai_api_key=os.environ.get("OPENAI_API_KEY"),
+        openai_api_base=raw_base or None,
+        temperature=0.1,
+    ).with_structured_output(Structure, method="function_calling")
+    print('Connect to:', model_name, 'base_url:', raw_base or 'default(OpenAI)', file=sys.stderr)
     
     prompt_template = ChatPromptTemplate.from_messages([
         SystemMessagePromptTemplate.from_template(system),

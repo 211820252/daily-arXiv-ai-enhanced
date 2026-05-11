@@ -1,5 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
-import re
+from pydantic import BaseModel, Field
 
 class Structure(BaseModel):
     tldr: str = Field(description="generate a too long; didn't read summary")

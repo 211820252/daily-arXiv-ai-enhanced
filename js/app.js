@@ -1442,6 +1442,8 @@ function showPaperDetails(paper, paperIndex) {
 }
 
 function getFullSummaryEndpoint() {
+  const saved = localStorage.getItem('fullSummaryEndpoint');
+  if (saved) return saved;
   return window.FULL_SUMMARY_ENDPOINT || window.LLM_API_CONFIG?.fullSummaryEndpoint || '';
 }
 
@@ -1514,7 +1516,7 @@ async function summarizeCurrentPaper() {
   if (!endpoint) {
     panel.hidden = false;
     status.textContent = 'Missing runtime endpoint';
-    content.innerHTML = '当前页面是静态 GitHub Pages，无法直接读取 GitHub Actions 中用于生成初始 summary 的 OPENAI_API_KEY。请部署一个同源后端代理，并在页面中设置 window.FULL_SUMMARY_ENDPOINT 指向该代理；前端不会再要求输入 API Key。';
+    content.innerHTML = 'Full paper AI summary requires a Cloudflare Worker proxy. Please go to <a href="settings.html">Settings</a> and configure the endpoint URL. See <code>worker/worker.js</code> for the worker script and deployment instructions.';
     return;
   }
 
