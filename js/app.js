@@ -768,8 +768,6 @@ function initDatePicker() {
     inputElement.style.display = 'none';
   }
 }
-  }
-}
 
 function formatDateForAPI(date) {
   return date.getFullYear() + "-" + 
