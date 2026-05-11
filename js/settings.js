@@ -10,17 +10,6 @@ function initSettings() {
   loadKeywordPreferences();
   // 作者偏好设置
   loadAuthorPreferences();
-  // 全文总结 API 设置
-  loadLlmPreferences();
-}
-
-function loadLlmPreferences() {
-  const baseUrlInput = document.getElementById('llmApiBaseUrl');
-  const modelInput = document.getElementById('llmModel');
-  const apiKeyInput = document.getElementById('llmApiKey');
-  if (baseUrlInput) baseUrlInput.value = localStorage.getItem('llmApiBaseUrl') || 'https://api.openai.com/v1';
-  if (modelInput) modelInput.value = localStorage.getItem('llmModel') || 'gpt-4.1';
-  if (apiKeyInput) apiKeyInput.value = localStorage.getItem('llmApiKey') || '';
 }
 
 // 从localStorage加载关键词偏好
@@ -407,12 +396,6 @@ function saveSettings() {
   // 保存设置到localStorage
   localStorage.setItem('preferredKeywords', JSON.stringify(keywords));
   localStorage.setItem('preferredAuthors', JSON.stringify(authors));
-  const baseUrlInput = document.getElementById('llmApiBaseUrl');
-  const modelInput = document.getElementById('llmModel');
-  const apiKeyInput = document.getElementById('llmApiKey');
-  if (baseUrlInput) localStorage.setItem('llmApiBaseUrl', baseUrlInput.value.trim() || 'https://api.openai.com/v1');
-  if (modelInput) localStorage.setItem('llmModel', modelInput.value.trim() || 'gpt-4.1');
-  if (apiKeyInput) localStorage.setItem('llmApiKey', apiKeyInput.value.trim());
   
   // 显示保存成功提示，添加成功图标
   showNotification('Settings saved successfully!', 'success');
@@ -433,10 +416,6 @@ function resetSettings() {
   showEmptyAuthorMessage();
   localStorage.removeItem('preferredKeywords');
   localStorage.removeItem('preferredAuthors');
-  localStorage.removeItem('llmApiBaseUrl');
-  localStorage.removeItem('llmModel');
-  localStorage.removeItem('llmApiKey');
-  loadLlmPreferences();
   
   // 显示重置成功提示
   showNotification('Settings reset to default!', 'info');

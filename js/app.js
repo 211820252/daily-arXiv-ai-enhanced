@@ -68,6 +68,7 @@ function getPaperMatchState(paper, keywords = activeKeywords, authors = activeAu
   const requiresKeywordMatch = keywords && keywords.length > 0;
   const requiresAuthorMatch = authors && authors.length > 0;
   const requiresTextMatch = query && query.trim().length > 0;
+  const hitCount = keywordHits.length + authorHits.length + (textHit ? 1 : 0);
   const matched =
     (!requiresKeywordMatch || keywordHits.length === keywords.length) &&
     (!requiresAuthorMatch || authorHits.length === authors.length) &&
@@ -78,6 +79,7 @@ function getPaperMatchState(paper, keywords = activeKeywords, authors = activeAu
     keywordHits,
     authorHits,
     textHit,
+    hitCount,
     reasons: buildMatchReasons(keywordHits, authorHits, textHit)
   };
 }
@@ -90,7 +92,7 @@ function renderMatchedTags(keywordHits = [], authorHits = [], textHit = false) {
     chips.push(`<span class="matched-tag text-match-tag">${escapeHtml(textSearchQuery.trim())}</span>`);
   }
   if (chips.length === 0) return '';
-  return `<div class="matched-tags" title="这篇论文命中的标签"><span class="matched-tags-label">Hit</span>${chips.join('')}</div>`;
+  return `<div class="matched-tags" title="这篇论文命中的标签"><span class="matched-tags-label">Hit ${chips.length}</span>${chips.join('')}</div>`;
 }
 
 // 加载用户的关键词设置
@@ -1174,9 +1176,14 @@ function renderPapers() {
       paper.displayKeywordHits = visibleState.keywordHits;
       paper.displayAuthorHits = visibleState.authorHits;
       paper.displayTextHit = visibleState.textHit;
+      paper.hitCount = visibleState.hitCount;
       return paper;
     })
-    .filter(paper => !hasActiveFilters || paper.isMatched);
+    .filter(paper => !hasActiveFilters || paper.isMatched)
+    .sort((a, b) => {
+      if ((b.hitCount || 0) !== (a.hitCount || 0)) return (b.hitCount || 0) - (a.hitCount || 0);
+      return 0;
+    });
   
   // 存储当前过滤后的论文列表，用于箭头键导航
   currentFilteredPapers = [...filteredPapers];
@@ -1434,12 +1441,8 @@ function showPaperDetails(paper, paperIndex) {
   document.body.style.overflow = 'hidden';
 }
 
-function getLlmSettings() {
-  return {
-    baseUrl: (localStorage.getItem('llmApiBaseUrl') || 'https://api.openai.com/v1').replace(/\/+$/, ''),
-    apiKey: localStorage.getItem('llmApiKey') || '',
-    model: localStorage.getItem('llmModel') || 'gpt-4.1'
-  };
+function getFullSummaryEndpoint() {
+  return window.FULL_SUMMARY_ENDPOINT || window.LLM_API_CONFIG?.fullSummaryEndpoint || '';
 }
 
 function getPaperHtmlUrls(paper) {
@@ -1502,16 +1505,16 @@ function renderFullSummary(text) {
 async function summarizeCurrentPaper() {
   if (!currentDetailPaper) return;
 
-  const settings = getLlmSettings();
+  const endpoint = getFullSummaryEndpoint();
   const panel = document.getElementById('fullSummaryPanel');
   const status = document.getElementById('fullSummaryStatus');
   const content = document.getElementById('fullSummaryContent');
   const button = document.getElementById('fullSummaryButton');
 
-  if (!settings.apiKey) {
+  if (!endpoint) {
     panel.hidden = false;
-    status.textContent = 'Need API key';
-    content.innerHTML = '请先在 Settings 中填写 OpenAI-compatible API Key、Base URL 和模型名。';
+    status.textContent = 'Missing runtime endpoint';
+    content.innerHTML = '当前页面是静态 GitHub Pages，无法直接读取 GitHub Actions 中用于生成初始 summary 的 OPENAI_API_KEY。请部署一个同源后端代理，并在页面中设置 window.FULL_SUMMARY_ENDPOINT 指向该代理；前端不会再要求输入 API Key。';
     return;
   }
 
@@ -1530,25 +1533,22 @@ async function summarizeCurrentPaper() {
     status.textContent = 'Summarizing...';
     const prompt = `请阅读下面这篇 arXiv 论文的全文或可获取正文，输出一份详细中文总结。\n\n要求：\n1. 先用 5-8 句话说明论文解决的问题、核心贡献和结论。\n2. 分别总结背景与动机、相关工作脉络、方法细节、实验设置、主要结果、局限性、适合继续阅读的理由。\n3. 如果正文不完整，请明确说明信息来源和缺失部分，不要假装读到了不存在的内容。\n4. 输出结构清晰，使用 Markdown 标题和列表。\n\n论文链接：${currentDetailPaper.url}\n正文来源：${paperText.source}\n\n论文内容：\n${paperText.text}`;
 
-    const response = await fetch(`${settings.baseUrl}/chat/completions`, {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${settings.apiKey}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: settings.model,
-        messages: [
-          {
-            role: 'system',
-            content: '你是严谨的学术论文阅读助手。回答必须基于用户提供的论文内容；如果内容不足，要明确说明。'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.2
+        paper: {
+          id: currentDetailPaper.id,
+          title: currentDetailPaper.title,
+          authors: currentDetailPaper.authors,
+          url: currentDetailPaper.url,
+          categories: currentDetailPaper.category
+        },
+        source: paperText.source,
+        content: paperText.text,
+        prompt
       }),
       signal: fullSummaryAbortController.signal
     });
@@ -1559,14 +1559,14 @@ async function summarizeCurrentPaper() {
     }
 
     const data = await response.json();
-    const summary = data.choices?.[0]?.message?.content || '模型没有返回可读总结。';
+    const summary = data.summary || data.content || data.choices?.[0]?.message?.content || '模型没有返回可读总结。';
     status.textContent = `Done · ${paperText.source.includes('ar5iv') || paperText.source.includes('/html/') ? 'HTML full text' : 'fallback abstract/PDF link'}`;
     content.innerHTML = renderFullSummary(summary);
   } catch (error) {
     if (error.name === 'AbortError') return;
     console.error('全文总结失败:', error);
     status.textContent = 'Failed';
-    content.innerHTML = `全文总结失败：${escapeHtml(error.message)}<br><br>如果是 CORS 或 API 鉴权问题，请检查 Settings 中的 Base URL/API Key，或使用支持浏览器跨域调用的代理端点。`;
+    content.innerHTML = `全文总结失败：${escapeHtml(error.message)}<br><br>如果是 CORS 或鉴权问题，请检查同源后端代理是否可用，以及它是否正确使用了生成初始 summary 的模型 API 配置。`;
   } finally {
     if (button) button.classList.remove('loading');
     fullSummaryAbortController = null;
