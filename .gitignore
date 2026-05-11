@@ -18,3 +18,8 @@ yarn.lock
 .DS_Store
 package.json
 .wrangler/
+
+# Test and temp data files
+data/*_test*
+data/*.jsonl.tmp
+to_md/*_test*
