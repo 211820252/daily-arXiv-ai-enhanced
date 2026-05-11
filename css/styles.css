@@ -1053,14 +1053,20 @@ main {
   color: #fff;
 }
 
-/* 月份导航栏：只做居中对齐，不碰布局 */
+/* 月份导航栏 */
 .flatpickr-months {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   padding: 8px 0 14px;
   background: transparent !important;
 }
 .flatpickr-month {
   background: transparent !important;
   height: auto !important;
+  flex: 1 !important;
+  display: flex !important;
+  justify-content: center !important;
 }
 
 /* 当前年月：flexbox 居中，年份在前月份在后 */
