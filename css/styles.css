@@ -1026,7 +1026,8 @@ main {
   display: none;
 }
 
-/* Make flatpickr calendar take full width */
+/* ===== 日历样式 ===== */
+/* 最大化日历宽度 */
 .flatpickr-calendar {
   width: 100% !important;
   max-width: 100% !important;
@@ -1040,99 +1041,67 @@ main {
 /* 有论文数据的日期高亮 */
 .flatpickr-day.has-papers {
   background: rgba(102, 126, 234, 0.12);
-  border-radius: 8px;
   font-weight: 700;
   color: var(--primary-color, #667eea);
 }
-
 .flatpickr-day.has-papers:hover {
   background: var(--primary-color, #667eea);
   color: #fff;
 }
-
 .flatpickr-day.has-papers.selected {
   background: var(--primary-color, #667eea);
   color: #fff;
 }
 
+/* 月份导航栏：只做居中对齐，不碰布局 */
 .flatpickr-months {
-  width: 100% !important;
   padding: 8px 0 14px;
   background: transparent !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 0 !important;
 }
-
 .flatpickr-month {
   background: transparent !important;
   height: auto !important;
-  flex: 1 !important;
 }
 
+/* 当前年月：flexbox 居中，年份在前月份在后 */
 .flatpickr-current-month {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 8px !important;
-  padding: 0 !important;
   font-size: 20px !important;
   font-weight: 600 !important;
-  position: static !important;
-  width: auto !important;
-  left: auto !important;
 }
 
 /* 年份在左 */
 .flatpickr-current-month .numInputWrapper {
-  width: auto !important;
   order: 1;
+  width: auto !important;
 }
-
 .flatpickr-current-month .numInputWrapper input.cur-year {
   font-size: 20px !important;
   font-weight: 600 !important;
   padding: 0 !important;
   margin: 0 !important;
-  text-align: center !important;
-  color: var(--text-color) !important;
   border: none !important;
   background: transparent !important;
-  width: 48px !important;
+  width: 52px !important;
+  text-align: center !important;
+  color: var(--text-color) !important;
   -moz-appearance: textfield !important;
 }
-
 .flatpickr-current-month .numInputWrapper input.cur-year::-webkit-inner-spin-button,
 .flatpickr-current-month .numInputWrapper input.cur-year::-webkit-outer-spin-button {
   -webkit-appearance: none !important;
   margin: 0 !important;
 }
-
-/* 月份在右 */
-.flatpickr-current-month .flatpickr-monthDropdown-months {
-  font-size: 20px !important;
-  font-weight: 600 !important;
-  color: var(--text-color) !important;
-  padding: 0 2px !important;
-  margin: 0 !important;
-  border: none !important;
-  background: transparent !important;
-  cursor: pointer !important;
-  order: 2;
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  text-align: center !important;
-  text-align-last: center !important;
-}
-
-/* 左右箭头：统一风格，放在两端 */
-.flatpickr-prev-month, .flatpickr-next-month {
+/* 隐藏 flatpickr 自带的上下箭头 */
+.numInputWrapper .arrowUp,
+.numInputWrapper .arrowDown {
   display: none !important;
 }
 
-/* 年份下拉框（与月份下拉框风格统一） */
+/* 年份下拉框（JS 动态生成） */
 .flatpickr-current-month select.cur-year-select {
   font-size: 20px !important;
   font-weight: 600 !important;
@@ -1149,60 +1118,48 @@ main {
   text-align-last: center !important;
   order: 1;
 }
+
+/* 月份在右 */
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: var(--text-color) !important;
+  padding: 0 2px !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  order: 2;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  text-align: center !important;
+  text-align-last: center !important;
+}
+
+/* 隐藏左右箭头 */
+.flatpickr-prev-month, .flatpickr-next-month {
+  display: none !important;
+}
+
+/* 星期头 */
 .flatpickr-weekdays {
-  width: 100% !important;
-  background-color: transparent !important;
+  background: transparent !important;
   margin-bottom: 4px;
 }
-
-.flatpickr-weekdaycontainer {
-  display: flex !important;
-  width: 100% !important;
-}
-
 .flatpickr-weekday {
-  height: 28px;
-  line-height: 28px;
-  flex: 1 1 calc(100% / 7) !important;
-  width: calc(100% / 7) !important;
-  text-align: center !important;
-  background-color: transparent !important;
+  background: transparent !important;
   color: var(--text-secondary) !important;
   font-weight: 500 !important;
   font-size: 13px !important;
 }
 
-.flatpickr-days {
-  width: 100% !important;
-  display: flex !important;
-  justify-content: center !important;
-  background-color: transparent !important;
-}
-
-.dayContainer {
-  width: 100% !important;
-  min-width: 100% !important;
-  max-width: 100% !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  padding: 0 !important;
-}
-
+/* 日期格子 —— 不碰 width / flex / display，让 flatpickr JS 管理 */
 .flatpickr-day {
-  margin: 2px 1px !important;
-  height: 40px !important;
-  line-height: 40px !important;
-  border-radius: 8px !important;
-  width: calc(100% / 7 - 2px) !important;
-  flex: 0 0 calc(100% / 7 - 2px) !important;
-  display: inline-flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  box-sizing: border-box !important;
-  font-weight: 400 !important;
-  font-size: 15px !important;
-  color: var(--text-color) !important;
-  border: none !important;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 8px;
+  font-size: 15px;
+  border: none;
   transition: all 0.15s ease;
 }
 
@@ -1213,23 +1170,23 @@ main {
   font-weight: 600 !important;
 }
 
-.flatpickr-day.selected, 
-.flatpickr-day.startRange, 
-.flatpickr-day.endRange, 
-.flatpickr-day.selected.inRange, 
-.flatpickr-day.startRange.inRange, 
-.flatpickr-day.endRange.inRange, 
-.flatpickr-day.selected:focus, 
-.flatpickr-day.startRange:focus, 
-.flatpickr-day.endRange:focus, 
-.flatpickr-day.selected:hover, 
-.flatpickr-day.startRange:hover, 
-.flatpickr-day.endRange:hover, 
-.flatpickr-day.selected.prevMonthDay, 
-.flatpickr-day.startRange.prevMonthDay, 
-.flatpickr-day.endRange.prevMonthDay, 
-.flatpickr-day.selected.nextMonthDay, 
-.flatpickr-day.startRange.nextMonthDay, 
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange,
+.flatpickr-day.selected:focus,
+.flatpickr-day.startRange:focus,
+.flatpickr-day.endRange:focus,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover,
+.flatpickr-day.selected.prevMonthDay,
+.flatpickr-day.startRange.prevMonthDay,
+.flatpickr-day.endRange.prevMonthDay,
+.flatpickr-day.selected.nextMonthDay,
+.flatpickr-day.startRange.nextMonthDay,
 .flatpickr-day.endRange.nextMonthDay {
   background: var(--gradient-primary) !important;
   border-color: var(--primary-color) !important;
@@ -1238,11 +1195,11 @@ main {
   box-shadow: var(--shadow-sm) !important;
 }
 
-.flatpickr-day.inRange, 
-.flatpickr-day.prevMonthDay.inRange, 
-.flatpickr-day.nextMonthDay.inRange, 
-.flatpickr-day.today.inRange, 
-.flatpickr-day.prevMonthDay.today.inRange, 
+.flatpickr-day.inRange,
+.flatpickr-day.prevMonthDay.inRange,
+.flatpickr-day.nextMonthDay.inRange,
+.flatpickr-day.today.inRange,
+.flatpickr-day.prevMonthDay.today.inRange,
 .flatpickr-day.nextMonthDay.today.inRange {
   background: rgba(102, 126, 234, 0.15) !important;
   border-color: transparent !important;
@@ -1250,20 +1207,20 @@ main {
   box-shadow: none !important;
 }
 
-.flatpickr-day:hover, 
-.flatpickr-day.prevMonthDay:hover, 
-.flatpickr-day.nextMonthDay:hover, 
-.flatpickr-day:focus, 
-.flatpickr-day.prevMonthDay:focus, 
+.flatpickr-day:hover,
+.flatpickr-day.prevMonthDay:hover,
+.flatpickr-day.nextMonthDay:hover,
+.flatpickr-day:focus,
+.flatpickr-day.prevMonthDay:focus,
 .flatpickr-day.nextMonthDay:focus {
   background: rgba(0, 0, 0, 0.05) !important;
   border-color: transparent !important;
 }
 
-.flatpickr-day.flatpickr-disabled, 
+.flatpickr-day.flatpickr-disabled,
 .flatpickr-day.flatpickr-disabled:hover,
-.flatpickr-day.prevMonthDay, 
-.flatpickr-day.nextMonthDay, 
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay,
 .flatpickr-day.notAllowed {
   color: rgba(57, 57, 57, 0.3) !important;
   background: transparent !important;
