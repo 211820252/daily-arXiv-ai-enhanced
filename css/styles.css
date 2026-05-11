@@ -1152,16 +1152,46 @@ main {
   display: none !important;
 }
 
+/* 内部容器居中 */
+.flatpickr-innerContainer,
+.flatpickr-rContainer {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
 /* 星期头 */
 .flatpickr-weekdays {
+  width: 100% !important;
   background: transparent !important;
   margin-bottom: 4px;
 }
+.flatpickr-weekdaycontainer {
+  display: flex !important;
+  width: 100% !important;
+}
 .flatpickr-weekday {
+  flex: 1 !important;
+  text-align: center !important;
   background: transparent !important;
   color: var(--text-secondary) !important;
   font-weight: 500 !important;
   font-size: 13px !important;
+}
+
+/* 日期容器 */
+.flatpickr-days {
+  width: 100% !important;
+  background: transparent !important;
+}
+.dayContainer {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  padding: 0 !important;
 }
 
 /* 日期格子 —— 不碰 width / flex / display，让 flatpickr JS 管理 */
