@@ -688,21 +688,27 @@ async function fetchAvailableDates() {
     const text = await response.text();
     const files = text.trim().split('\n');
 
-    const dateRegex = /(\d{4}-\d{2}-\d{2})_AI_enhanced_(English|Chinese)\.jsonl/;
-    const dateLanguageMap = new Map(); // Store date -> available languages
+    const enhancedRegex = /(\d{4}-\d{2}-\d{2})_AI_enhanced_(English|Chinese)\.jsonl/;
+    const rawRegex = /^(\d{4}-\d{2}-\d{2})\.jsonl$/;
+    const dateLanguageMap = new Map();
     const dates = [];
-    
+
     files.forEach(file => {
-      const match = file.match(dateRegex);
+      let match = file.match(enhancedRegex);
       if (match && match[1] && match[2]) {
-        const date = match[1];
-        const language = match[2];
-        
-        if (!dateLanguageMap.has(date)) {
-          dateLanguageMap.set(date, []);
-          dates.push(date);
+        if (!dateLanguageMap.has(match[1])) {
+          dateLanguageMap.set(match[1], []);
+          dates.push(match[1]);
         }
-        dateLanguageMap.get(date).push(language);
+        dateLanguageMap.get(match[1]).push(match[2]);
+      } else {
+        match = file.match(rawRegex);
+        if (match && match[1]) {
+          if (!dateLanguageMap.has(match[1])) {
+            dateLanguageMap.set(match[1], ['Chinese']);
+            dates.push(match[1]);
+          }
+        }
       }
     });
     

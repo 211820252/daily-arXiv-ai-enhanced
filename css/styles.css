@@ -984,7 +984,7 @@ main {
   border-radius: var(--radius-md);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 360px;
+  max-width: 420px;
   max-height: 90vh;
   overflow-y: auto;
   animation: modalFadeIn 0.3s ease forwards;
@@ -1039,10 +1039,23 @@ main {
 
 /* 有论文数据的日期高亮 */
 .flatpickr-day.has-papers {
-  background: var(--gradient-light, linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%));
-  border-radius: 4px;
-  font-weight: 600;
-  color: var(--accent-color, #6d2dad);
+  background: rgba(102, 126, 234, 0.12);
+  border-radius: 8px;
+  font-weight: 700;
+  color: var(--primary-color, #667eea);
+  position: relative;
+}
+
+.flatpickr-day.has-papers::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent-color, #6d2dad);
 }
 
 .flatpickr-day.has-papers:hover {
@@ -1050,9 +1063,17 @@ main {
   color: #fff;
 }
 
+.flatpickr-day.has-papers:hover::after {
+  background: #fff;
+}
+
 .flatpickr-day.has-papers.selected {
   background: var(--primary-color, #667eea);
   color: #fff;
+}
+
+.flatpickr-day.has-papers.selected::after {
+  background: #fff;
 }
 
 .flatpickr-months {
@@ -1124,19 +1145,20 @@ main {
 
 .flatpickr-day {
   margin: 2px;
-  height: 36px !important;
-  line-height: 36px !important;
-  border-radius: 50% !important;
-  /* max-width: 36px !important; */
-  width: calc(100% / 7 ) !important;
-  flex: 0 0 calc(100% / 7 ) !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  border-radius: 8px !important;
+  width: calc(100% / 7 - 4px) !important;
+  flex: 0 0 calc(100% / 7 - 4px) !important;
   display: inline-flex !important;
   justify-content: center !important;
   align-items: center !important;
   box-sizing: border-box !important;
   font-weight: 400 !important;
+  font-size: 15px !important;
   color: var(--text-color) !important;
   border: none !important;
+  transition: all 0.15s ease;
 }
 
 .flatpickr-day.today {
