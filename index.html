@@ -88,7 +88,7 @@
                 <div class="header-controls">
                     <div class="date-selector">
                         <div class="date-display">
-                            <span id="currentDate">Loading...</span>
+                            <span id="currentDate">加载中...</span>
                             <button id="calendarButton" class="icon-button">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M19 4H18V2H16V4H8V2H6V4H5C3.89 4 3.01 4.9 3.01 6L3 20C3 21.1 3.89 22 5 22H19C20.1 22 21 21.1 21 20V6C21 4.9 20.1 4 19 4ZM19 20H5V9H19V20ZM7 11H12V16H7V11Z" fill="currentColor"/>
@@ -125,29 +125,35 @@
             </div>
             <div class="category-nav">
                 <div class="category-label-container">
-                    <span class="category-nav-label">Category</span>
+                    <span class="category-nav-label">分类</span>
                     <div class="category-scroll">
-                        <button class="category-button active" data-category="all">All</button>
+                        <button class="category-button active" data-category="all">全部</button>
                         <!-- 分类按钮将通过 JavaScript 动态生成 -->
                     </div>
                 </div>
-                <!-- Filter Tag Container -->
+                <!-- Author Filter -->
                 <div class="filter-label-container">
-                    <span class="filter-nav-label">Filter</span>
-                    <!-- Text Search (magnifier-triggered) -->
+                    <span class="filter-nav-label">作者</span>
+                    <div class="filter-scroll" id="authorFilterTags">
+                        <!-- Authors will be dynamically added here -->
+                    </div>
+                </div>
+                <!-- Keyword Filter -->
+                <div class="filter-label-container">
+                    <span class="filter-nav-label">关键词</span>
                     <div id="textSearchContainer" class="text-search">
-                        <button id="textSearchToggle" class="icon-button" title="Search">
+                        <button id="textSearchToggle" class="icon-button" title="搜索">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10.5 3a7.5 7.5 0 105.07 13.07l3.68 3.68a1 1 0 001.41-1.41l-3.68-3.68A7.5 7.5 0 0010.5 3zm0 2a5.5 5.5 0 110 11 5.5 5.5 0 010-11z" fill="currentColor"/>
                             </svg>
                         </button>
                         <div class="search-input-wrapper" style="display: none;">
-                            <input id="textSearchInput" type="text" placeholder="Type to search..." aria-label="Search" />
-                            <button id="textSearchClear" class="clear-x" title="Clear" style="display: none;">×</button>
+                            <input id="textSearchInput" type="text" placeholder="输入关键词搜索..." aria-label="搜索" />
+                            <button id="textSearchClear" class="clear-x" title="清除" style="display: none;">×</button>
                         </div>
                     </div>
-                    <div class="filter-scroll" id="filterTags">
-                        <!-- Authors and Keywords will be dynamically added here -->
+                    <div class="filter-scroll" id="keywordFilterTags">
+                        <!-- Keywords will be dynamically added here -->
                     </div>
                 </div>
             </div>
@@ -157,7 +163,7 @@
             <div class="date-picker-modal" id="datePickerModal">
                 <div class="date-picker-content">
                     <div class="date-picker-body">
-                        <h3 class="date-picker-title">Select Date</h3>
+                        <h3 class="date-picker-title">选择日期</h3>
                         <div class="flatpickr-container">
                             <input type="text" id="datepicker" placeholder="Select Date" data-input>
                         </div>

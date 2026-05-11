@@ -138,76 +138,78 @@ function loadUserAuthors() {
   renderFilterTags();
 }
 
-// 渲染过滤标签（作者和关键词）
-function renderFilterTags() {
-  const filterTagsElement = document.getElementById('filterTags');
-  const filterContainer = document.querySelector('.filter-label-container');
-  
-  // 如果没有作者和关键词，仅隐藏标签区域，保留容器（以显示搜索按钮）
-  if ((!userAuthors || userAuthors.length === 0) && (!userKeywords || userKeywords.length === 0)) {
-    filterContainer.style.display = 'flex';
-    if (filterTagsElement) {
-      filterTagsElement.style.display = 'none';
-      filterTagsElement.innerHTML = '';
-    }
+// 渲染作者过滤标签
+function renderAuthorFilterTags() {
+  const container = document.getElementById('authorFilterTags');
+  if (!container) return;
+
+  if (!userAuthors || userAuthors.length === 0) {
+    container.style.display = 'none';
+    container.innerHTML = '';
     return;
   }
-  
-  filterContainer.style.display = 'flex';
-  if (filterTagsElement) {
-    filterTagsElement.style.display = 'flex';
-  }
-  filterTagsElement.innerHTML = '';
-  
-  // 先添加作者标签
-  if (userAuthors && userAuthors.length > 0) {
-    userAuthors.forEach(author => {
-      const tagElement = document.createElement('span');
-      tagElement.className = `category-button author-button ${activeAuthors.includes(author) ? 'active' : ''}`;
-      tagElement.textContent = author;
-      tagElement.dataset.author = author;
-      tagElement.title = "匹配作者姓名";
-      
-      tagElement.addEventListener('click', () => {
-        toggleAuthorFilter(author);
-      });
-      
-      filterTagsElement.appendChild(tagElement);
-      
-      // 添加出现动画后移除动画类
-      if (!activeAuthors.includes(author)) {
-        tagElement.classList.add('tag-appear');
-        setTimeout(() => {
-          tagElement.classList.remove('tag-appear');
-        }, 300);
-      }
+
+  container.style.display = 'flex';
+  container.innerHTML = '';
+
+  userAuthors.forEach(author => {
+    const tagElement = document.createElement('span');
+    tagElement.className = `category-button author-button ${activeAuthors.includes(author) ? 'active' : ''}`;
+    tagElement.textContent = author;
+    tagElement.dataset.author = author;
+    tagElement.title = '匹配作者姓名';
+
+    tagElement.addEventListener('click', () => {
+      toggleAuthorFilter(author);
     });
+
+    container.appendChild(tagElement);
+
+    if (!activeAuthors.includes(author)) {
+      tagElement.classList.add('tag-appear');
+      setTimeout(() => tagElement.classList.remove('tag-appear'), 300);
+    }
+  });
+}
+
+// 渲染关键词过滤标签
+function renderKeywordFilterTags() {
+  const container = document.getElementById('keywordFilterTags');
+  if (!container) return;
+
+  if (!userKeywords || userKeywords.length === 0) {
+    container.style.display = 'none';
+    container.innerHTML = '';
+    return;
   }
-  
-  // 再添加关键词标签
-  if (userKeywords && userKeywords.length > 0) {
-    userKeywords.forEach(keyword => {
-      const tagElement = document.createElement('span');
-      tagElement.className = `category-button keyword-button ${activeKeywords.includes(keyword) ? 'active' : ''}`;
-      tagElement.textContent = keyword;
-      tagElement.dataset.keyword = keyword;
-      tagElement.title = "匹配标题和摘要中的关键词";
-      
-      tagElement.addEventListener('click', () => {
-        toggleKeywordFilter(keyword);
-      });
-      
-      filterTagsElement.appendChild(tagElement);
-      
-      // 添加出现动画后移除动画类
-      if (!activeKeywords.includes(keyword)) {
-        tagElement.classList.add('tag-appear');
-        setTimeout(() => {
-          tagElement.classList.remove('tag-appear');
-        }, 300);
-      }
+
+  container.style.display = 'flex';
+  container.innerHTML = '';
+
+  userKeywords.forEach(keyword => {
+    const tagElement = document.createElement('span');
+    tagElement.className = `category-button keyword-button ${activeKeywords.includes(keyword) ? 'active' : ''}`;
+    tagElement.textContent = keyword;
+    tagElement.dataset.keyword = keyword;
+    tagElement.title = '匹配标题和摘要中的关键词';
+
+    tagElement.addEventListener('click', () => {
+      toggleKeywordFilter(keyword);
     });
-  }
+
+    container.appendChild(tagElement);
+
+    if (!activeKeywords.includes(keyword)) {
+      tagElement.classList.add('tag-appear');
+      setTimeout(() => tagElement.classList.remove('tag-appear'), 300);
+    }
+  });
+}
+
+// 渲染所有过滤标签
+function renderFilterTags() {
+  renderAuthorFilterTags();
+  renderKeywordFilterTags();
 }
 
 // 切换关键词过滤
@@ -868,7 +870,7 @@ async function loadPapersByDate(date) {
   container.innerHTML = `
     <div class="loading-container">
       <div class="loading-spinner"></div>
-      <p>Loading paper...</p>
+      <p>加载论文中...</p>
     </div>
   `;
   
@@ -882,7 +884,7 @@ async function loadPapersByDate(date) {
       if (response.status === 404) {
         container.innerHTML = `
           <div class="loading-container">
-            <p>No papers found for this date.</p>
+            <p>该日期没有找到论文。</p>
           </div>
         `;
         paperData = {};
@@ -934,8 +936,8 @@ async function loadPapersByDate(date) {
     console.error('加载论文数据失败:', error);
     container.innerHTML = `
       <div class="loading-container">
-        <p>Loading data fails. Please retry.</p>
-        <p>Error messages: ${error.message}</p>
+        <p>数据加载失败，请重试。</p>
+        <p>错误信息：${error.message}</p>
       </div>
     `;
   }
@@ -1016,7 +1018,7 @@ function renderCategoryFilter(categories) {
   });
   
   container.innerHTML = `
-    <button class="category-button ${currentCategory === 'all' ? 'active' : ''}" data-category="all">All<span class="category-count">${totalPapers}</span></button>
+    <button class="category-button ${currentCategory === 'all' ? 'active' : ''}" data-category="all">全部<span class="category-count">${totalPapers}</span></button>
   `;
   
   sortedCategories.forEach(category => {
@@ -1191,7 +1193,7 @@ function renderPapers() {
   if (filteredPapers.length === 0) {
     container.innerHTML = `
       <div class="loading-container">
-        <p>No paper found.</p>
+        <p>没有找到匹配的论文。</p>
       </div>
     `;
     return;
@@ -1271,7 +1273,7 @@ function renderPapers() {
           <div class="footer-left">
             <span class="paper-card-date">${formatDate(paper.date)}</span>
           </div>
-          <span class="paper-card-link">Details</span>
+          <span class="paper-card-link">详情</span>
         </div>
       </div>
     `;
@@ -1358,34 +1360,34 @@ function showPaperDetails(paper, paperIndex) {
   
   const modalContent = `
     <div class="paper-details ${matchedPaperClass}">
-      <p><strong>Authors: </strong>${highlightedAuthors}</p>
+      <p><strong>作者：</strong>${highlightedAuthors}</p>
       ${renderMatchedTags(paper.displayKeywordHits || [], paper.displayAuthorHits || [], paper.displayTextHit)}
-      <p><strong>Categories: </strong>${categoryDisplay}</p>
-      <p><strong>Date: </strong>${formatDate(paper.date)}</p>
+      <p><strong>分类：</strong>${categoryDisplay}</p>
+      <p><strong>日期：</strong>${formatDate(paper.date)}</p>
       <div class="full-summary-panel" id="fullSummaryPanel" hidden>
         <div class="full-summary-header">
-          <h3>Full Paper AI Summary</h3>
+          <h3>全文 AI 总结</h3>
           <span id="fullSummaryStatus" class="full-summary-status"></span>
         </div>
         <div id="fullSummaryContent" class="full-summary-content"></div>
       </div>
-      
-      
+
+
       <h3>TL;DR</h3>
       <p>${highlightedSummary}</p>
-      
+
       <div class="paper-sections">
-        ${paper.motivation ? `<div class="paper-section"><h4>Motivation</h4><p>${highlightedMotivation}</p></div>` : ''}
-        ${paper.method ? `<div class="paper-section"><h4>Method</h4><p>${highlightedMethod}</p></div>` : ''}
-        ${paper.result ? `<div class="paper-section"><h4>Result</h4><p>${highlightedResult}</p></div>` : ''}
-        ${paper.conclusion ? `<div class="paper-section"><h4>Conclusion</h4><p>${highlightedConclusion}</p></div>` : ''}
+        ${paper.motivation ? `<div class="paper-section"><h4>研究动机</h4><p>${highlightedMotivation}</p></div>` : ''}
+        ${paper.method ? `<div class="paper-section"><h4>方法</h4><p>${highlightedMethod}</p></div>` : ''}
+        ${paper.result ? `<div class="paper-section"><h4>实验结果</h4><p>${highlightedResult}</p></div>` : ''}
+        ${paper.conclusion ? `<div class="paper-section"><h4>结论</h4><p>${highlightedConclusion}</p></div>` : ''}
       </div>
-      
-      ${highlightedAbstract ? `<h3>Abstract</h3><p class="original-abstract">${highlightedAbstract}</p>` : ''}
-      
+
+      ${highlightedAbstract ? `<h3>摘要</h3><p class="original-abstract">${highlightedAbstract}</p>` : ''}
+
       <div class="pdf-preview-section">
         <div class="pdf-header">
-          <h3>PDF Preview</h3>
+          <h3>PDF 预览</h3>
           <button class="pdf-expand-btn" onclick="togglePdfSize(this)">
             <svg class="expand-icon" viewBox="0 0 24 24" width="24" height="24">
               <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
@@ -1421,7 +1423,7 @@ function showPaperDetails(paper, paperIndex) {
   if (paper.code_url) {
     githubLink.href = paper.code_url;
     githubLink.style.display = 'flex'; 
-    githubLink.title = "View Code on GitHub";
+    githubLink.title = "在 GitHub 上查看代码";
   } else {
     githubLink.style.display = 'none';
   }
@@ -1515,8 +1517,8 @@ async function summarizeCurrentPaper() {
 
   if (!endpoint) {
     panel.hidden = false;
-    status.textContent = 'Missing runtime endpoint';
-    content.innerHTML = 'Full paper AI summary requires a Cloudflare Worker proxy. Please go to <a href="settings.html">Settings</a> and configure the endpoint URL. See <code>worker/worker.js</code> for the worker script and deployment instructions.';
+    status.textContent = '未配置 API 端点';
+    content.innerHTML = '全文 AI 总结需要 Cloudflare Worker 代理。请前往 <a href="settings.html">设置页面</a> 配置端点地址。';
     return;
   }
 
@@ -1526,13 +1528,13 @@ async function summarizeCurrentPaper() {
   fullSummaryAbortController = new AbortController();
 
   panel.hidden = false;
-  status.textContent = 'Reading full paper...';
-  content.innerHTML = '<div class="full-summary-loading">Fetching paper text and calling the model API...</div>';
+  status.textContent = '正在读取全文...';
+  content.innerHTML = '<div class="full-summary-loading">正在获取论文全文并调用模型 API...</div>';
   if (button) button.classList.add('loading');
 
   try {
     const paperText = await fetchFullPaperText(currentDetailPaper);
-    status.textContent = 'Summarizing...';
+    status.textContent = '正在总结...';
     const prompt = `请阅读下面这篇 arXiv 论文的全文或可获取正文，输出一份详细中文总结。\n\n要求：\n1. 先用 5-8 句话说明论文解决的问题、核心贡献和结论。\n2. 分别总结背景与动机、相关工作脉络、方法细节、实验设置、主要结果、局限性、适合继续阅读的理由。\n3. 如果正文不完整，请明确说明信息来源和缺失部分，不要假装读到了不存在的内容。\n4. 输出结构清晰，使用 Markdown 标题和列表。\n\n论文链接：${currentDetailPaper.url}\n正文来源：${paperText.source}\n\n论文内容：\n${paperText.text}`;
 
     const response = await fetch(endpoint, {
@@ -1562,13 +1564,13 @@ async function summarizeCurrentPaper() {
 
     const data = await response.json();
     const summary = data.summary || data.content || data.choices?.[0]?.message?.content || '模型没有返回可读总结。';
-    status.textContent = `Done · ${paperText.source.includes('ar5iv') || paperText.source.includes('/html/') ? 'HTML full text' : 'fallback abstract/PDF link'}`;
+    status.textContent = `完成 · ${paperText.source.includes('ar5iv') || paperText.source.includes('/html/') ? 'HTML 全文' : '摘要/PDF 链接'}`;
     content.innerHTML = renderFullSummary(summary);
   } catch (error) {
     if (error.name === 'AbortError') return;
     console.error('全文总结失败:', error);
-    status.textContent = 'Failed';
-    content.innerHTML = `全文总结失败：${escapeHtml(error.message)}<br><br>如果是 CORS 或鉴权问题，请检查同源后端代理是否可用，以及它是否正确使用了生成初始 summary 的模型 API 配置。`;
+    status.textContent = '失败';
+    content.innerHTML = `全文总结失败：${escapeHtml(error.message)}<br><br>请检查 Cloudflare Worker 是否正常运行，API Key 是否正确配置。`;
   } finally {
     if (button) button.classList.remove('loading');
     fullSummaryAbortController = null;
@@ -1639,7 +1641,7 @@ function showRandomPaperIndicator() {
   // 创建新的指示器
   const indicator = document.createElement('div');
   indicator.className = 'random-paper-indicator';
-  indicator.textContent = 'Random Paper';
+  indicator.textContent = '随机论文';
   
   // 添加到页面
   document.body.appendChild(indicator);
@@ -1703,7 +1705,7 @@ async function loadPapersByDateRange(startDate, endDate) {
   container.innerHTML = `
     <div class="loading-container">
       <div class="loading-spinner"></div>
-      <p>Loading papers from ${formatDate(startDate)} to ${formatDate(endDate)}...</p>
+      <p>正在加载 ${formatDate(startDate)} 至 ${formatDate(endDate)} 的论文...</p>
     </div>
   `;
   
@@ -1758,8 +1760,8 @@ async function loadPapersByDateRange(startDate, endDate) {
     console.error('加载论文数据失败:', error);
     container.innerHTML = `
       <div class="loading-container">
-        <p>Loading data fails. Please retry.</p>
-        <p>Error messages: ${error.message}</p>
+        <p>数据加载失败，请重试。</p>
+        <p>错误信息：${error.message}</p>
       </div>
     `;
   }

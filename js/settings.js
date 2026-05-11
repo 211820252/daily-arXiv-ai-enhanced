@@ -76,7 +76,7 @@ function showEmptyTagMessage() {
   const emptyMessage = document.createElement('div');
   emptyMessage.id = 'emptyTagMessage';
   emptyMessage.className = 'empty-tag-message';
-  emptyMessage.textContent = 'No keywords added yet. Add some keywords below.';
+  emptyMessage.textContent = '暂未添加关键词，在下方输入框中添加。';
   selectedKeywordsContainer.appendChild(emptyMessage);
 }
 
@@ -87,7 +87,7 @@ function loadEndpointSetting() {
   const saved = localStorage.getItem('fullSummaryEndpoint');
   if (saved) {
     endpointInput.value = saved;
-    endpointStatus.textContent = 'Endpoint configured. Full paper summary is ready.';
+    endpointStatus.textContent = '端点已配置，全文总结功能就绪。';
     endpointStatus.style.color = '#27ae60';
   }
 }
@@ -100,7 +100,7 @@ function saveEndpointSetting() {
 
   if (!endpoint) {
     localStorage.removeItem('fullSummaryEndpoint');
-    endpointStatus.textContent = 'Endpoint removed. Full paper summary will use default.';
+    endpointStatus.textContent = '端点已移除，将不使用全文总结功能。';
     endpointStatus.style.color = '#e67e22';
     return;
   }
@@ -109,13 +109,13 @@ function saveEndpointSetting() {
   try {
     new URL(endpoint);
   } catch (e) {
-    endpointStatus.textContent = 'Invalid URL format. Please check.';
+    endpointStatus.textContent = 'URL 格式不正确，请检查。';
     endpointStatus.style.color = '#e74c3c';
     return;
   }
 
   localStorage.setItem('fullSummaryEndpoint', endpoint);
-  endpointStatus.textContent = 'Endpoint saved. Full paper summary is ready.';
+  endpointStatus.textContent = '端点已保存，全文总结功能就绪。';
   endpointStatus.style.color = '#27ae60';
 }
 
@@ -125,7 +125,7 @@ function showEmptyAuthorMessage() {
   const emptyMessage = document.createElement('div');
   emptyMessage.id = 'emptyAuthorMessage';
   emptyMessage.className = 'empty-tag-message';
-  emptyMessage.textContent = 'No authors added yet. Add some authors below.';
+  emptyMessage.textContent = '暂未添加作者，在下方输入框中添加。';
   selectedAuthorsContainer.appendChild(emptyMessage);
 }
 
@@ -373,12 +373,12 @@ function copyKeywords() {
   });
 
   if (keywords.length === 0) {
-    showNotification('No keywords to copy!', 'info');
+    showNotification('没有关键词可复制！', 'info');
     return;
   }
 
   const keywordsString = keywords.join(',');
-  copyToClipboard(keywordsString, 'Keywords copied to clipboard!');
+  copyToClipboard(keywordsString, '关键词已复制到剪贴板！');
 }
 
 // 复制作者到剪切板
@@ -391,12 +391,12 @@ function copyAuthors() {
   });
 
   if (authors.length === 0) {
-    showNotification('No authors to copy!', 'info');
+    showNotification('没有作者可复制！', 'info');
     return;
   }
 
   const authorsString = authors.join(',');
-  copyToClipboard(authorsString, 'Authors copied to clipboard!');
+  copyToClipboard(authorsString, '作者已复制到剪贴板！');
 }
 
 // 复制到剪切板的通用函数
@@ -427,7 +427,7 @@ function fallbackCopyText(text, successMessage) {
     showNotification(successMessage, 'success');
   } catch (err) {
     console.error('复制失败:', err);
-    showNotification('Failed to copy to clipboard', 'info');
+    showNotification('复制到剪贴板失败', 'info');
   }
 
   document.body.removeChild(textArea);
@@ -456,7 +456,7 @@ function saveSettings() {
   localStorage.setItem('preferredAuthors', JSON.stringify(authors));
   
   // 显示保存成功提示，添加成功图标
-  showNotification('Settings saved successfully!', 'success');
+  showNotification('设置保存成功！', 'success');
 }
 
 // 重置设置
@@ -476,7 +476,7 @@ function resetSettings() {
   localStorage.removeItem('preferredAuthors');
   
   // 显示重置成功提示
-  showNotification('Settings reset to default!', 'info');
+  showNotification('设置已恢复默认！', 'info');
 }
 
 // 显示通知
