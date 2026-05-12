@@ -140,7 +140,7 @@ jobs:
         export LANGUAGE="${{ vars.LANGUAGE }}"
         export MODEL_NAME="${{ vars.MODEL_NAME }}"
 
-        python enhance.py --data $DATA_FILE
+        python enhance.py --data $DATA_FILE --max_workers 5
 
         if [ $? -ne 0 ]; then
             echo "AI处理失败 / AI processing failed"
