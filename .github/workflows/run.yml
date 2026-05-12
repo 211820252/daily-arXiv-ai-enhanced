@@ -50,7 +50,7 @@ jobs:
         export CATEGORIES="${{ vars.CATEGORIES }}"
         export MODEL_NAME="${{ vars.MODEL_NAME }}"
 
-        scrapy crawl arxiv -o ../$data_file
+        scrapy crawl arxiv -o ../$data_file:jsonlines
 
         if [ ! -f "../$data_file" ]; then
             echo "爬取失败，未生成数据文件 / Crawling failed, no data file generated"
