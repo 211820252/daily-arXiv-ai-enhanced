@@ -109,12 +109,12 @@ jobs:
 
         # 去重成功：原子替换正式文件
         if [ "$dedup_exit_code" = "0" ]; then
-          FINAL_FILE="data/${today}.jsonl"
-          mv "$DATA_FILE" "$FINAL_FILE"
+          FINAL_FILE="../data/${today}.jsonl"
+          mv "../$DATA_FILE" "$FINAL_FILE"
           echo "✅ 去重完成，已保存到 $FINAL_FILE"
         else
           # 无新内容或出错：清理临时文件，保留旧数据
-          rm -f "$DATA_FILE"
+          rm -f "../$DATA_FILE"
           echo "⏹️ 无新内容，临时文件已清理，旧数据不受影响"
         fi
 
