@@ -11,13 +11,14 @@ import dotenv
 import argparse
 from tqdm import tqdm
 
-import langchain_core.exceptions
 from langchain_openai import ChatOpenAI
 from langchain.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
+from langchain.output_parsers import PydanticOutputParser
+from langchain_core.output_parsers import StrOutputParser
 from structure import Structure
 
 if os.path.exists('.env'):
@@ -32,7 +33,7 @@ def parse_args():
     parser.add_argument("--max_workers", type=int, default=1, help="Maximum number of parallel workers")
     return parser.parse_args()
 
-def process_single_item(chain, item: Dict, language: str) -> Dict:
+def process_single_item(chain, parser, item: Dict, language: str) -> Dict:
     def is_sensitive(content: str) -> bool:
         """
         调用 spam.dw-dengwei.workers.dev 接口检测内容是否包含敏感词。
@@ -124,33 +125,14 @@ def process_single_item(chain, item: Dict, language: str) -> Dict:
     }
     
     try:
-        response: Structure = chain.invoke({
+        response_text = chain.invoke({
             "language": language,
             "content": item['summary']
         })
-        item['AI'] = response.model_dump()
-    except langchain_core.exceptions.OutputParserException as e:
-        # 尝试从错误信息中提取 JSON 字符串并修复
-        error_msg = str(e)
-        partial_data = {}
-        
-        if "Function Structure arguments:" in error_msg:
-            try:
-                # 提取 JSON 字符串
-                json_str = error_msg.split("Function Structure arguments:", 1)[1].strip().split('are not valid JSON')[0].strip()
-                # 预处理 LaTeX 数学符号 - 使用四个反斜杠来确保正确转义
-                json_str = json_str.replace('\\', '\\\\')
-                # 尝试解析修复后的 JSON
-                partial_data = json.loads(json_str)
-            except Exception as json_e:
-                print(f"Failed to parse JSON for {item.get('id', 'unknown')}: {json_e}", file=sys.stderr)
-        
-        # Merge partial data with defaults to ensure all fields exist
-        item['AI'] = {**default_ai_fields, **partial_data}
-        print(f"Using partial AI data for {item.get('id', 'unknown')}: {list(partial_data.keys())}", file=sys.stderr)
+        ai_data = parser.parse(response_text)
+        item['AI'] = ai_data.model_dump()
     except Exception as e:
-        # Catch any other exceptions and provide default values
-        print(f"Unexpected error for {item.get('id', 'unknown')}: {e}", file=sys.stderr)
+        print(f"Error for {item.get('id', 'unknown')}: {e}", file=sys.stderr)
         item['AI'] = default_ai_fields
     
     # Final validation to ensure all required fields exist
@@ -177,22 +159,27 @@ def process_all_items(data: List[Dict], model_name: str, language: str, max_work
         openai_api_key=os.environ.get("OPENAI_API_KEY"),
         openai_api_base=raw_base or None,
         temperature=0.1,
-    ).with_structured_output(Structure, method="function_calling")
+    )
     print('Connect to:', model_name, 'base_url:', raw_base or 'default(OpenAI)', file=sys.stderr)
-    
+
+    parser = PydanticOutputParser(pydantic_object=Structure)
+
+    system_with_format = system + "\n\n{format_instructions}"
+
     prompt_template = ChatPromptTemplate.from_messages([
-        SystemMessagePromptTemplate.from_template(system),
+        SystemMessagePromptTemplate.from_template(system_with_format),
         HumanMessagePromptTemplate.from_template(template=template)
     ])
+    prompt_template = prompt_template.partial(format_instructions=parser.get_format_instructions())
 
-    chain = prompt_template | llm
+    chain = prompt_template | llm | StrOutputParser()
     
     # 使用线程池并行处理
     processed_data = [None] * len(data)  # 预分配结果列表
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # 提交所有任务
         future_to_idx = {
-            executor.submit(process_single_item, chain, item, language): idx
+            executor.submit(process_single_item, chain, parser, item, language): idx
             for idx, item in enumerate(data)
         }
         
