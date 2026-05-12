@@ -10,10 +10,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     data = []
 
-    # 从输入文件名推导输出 md 文件名
+    # 从输入文件名推导输出 md 文件名，输出到输入文件的同级目录
     # 2026-05-11_AI_enhanced_Chinese.jsonl → 2026-05-11.md
     # 2026-05-11_test_AI_enhanced_Chinese.jsonl → 2026-05-11_test.md
-    md_file = re.sub(r'_AI_enhanced_.*\.jsonl$', '.md', os.path.basename(args.data))
+    md_filename = re.sub(r'_AI_enhanced_.*\.jsonl$', '.md', os.path.basename(args.data))
+    md_file = os.path.join(os.path.dirname(args.data), md_filename)
     preference = os.environ.get('CATEGORIES', 'cs.CV, cs.CL').split(',')
     preference = list(map(lambda x: x.strip(), preference))
     def rank(cate):
