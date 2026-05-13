@@ -154,8 +154,14 @@ def process_all_items(data: List[Dict], model_name: str, language: str, max_work
     if raw_base and not raw_base.rstrip('/').endswith('/v1'):
         raw_base = raw_base.rstrip('/') + '/v1'
 
-    # 读取关键词，用于过滤不相关的论文（检查摘要中是否包含任意关键词）
-    keywords = [k.strip().lower() for k in os.environ.get("KEYWORDS", "").split(",") if k.strip()]
+    # 读取关键词配置文件，过滤不相关的论文（检查摘要中是否包含任意关键词）
+    keywords = []
+    keywords_file = os.path.join(os.path.dirname(__file__), "..", "config", "keywords.json")
+    try:
+        with open(keywords_file, "r") as f:
+            keywords = [k.strip().lower() for k in json.load(f) if k.strip()]
+    except Exception:
+        pass
 
     skipped_ai_fields = {
         "tldr": "Skipped (no keyword match in abstract)",

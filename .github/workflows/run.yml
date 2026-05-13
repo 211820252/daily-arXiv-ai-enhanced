@@ -139,7 +139,6 @@ jobs:
         export OPENAI_BASE_URL=${{ secrets.OPENAI_BASE_URL }}
         export LANGUAGE="${{ vars.LANGUAGE }}"
         export MODEL_NAME="${{ vars.MODEL_NAME }}"
-        export KEYWORDS="${{ vars.KEYWORDS }}"
 
         python enhance.py --data $DATA_FILE --max_workers 10
 
