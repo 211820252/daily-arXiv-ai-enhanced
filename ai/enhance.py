@@ -33,6 +33,19 @@ def parse_args():
     parser.add_argument("--max_workers", type=int, default=10, help="Maximum number of parallel workers")
     return parser.parse_args()
 
+def _extract_json(text: str) -> str:
+    """从 LLM 输出中提取 JSON，容忍模型输出额外文本"""
+    # 1. 尝试匹配 ```json ... ``` 代码块
+    m = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', text)
+    if m:
+        return m.group(1)
+    # 2. 尝试匹配最外层的 { ... } 对象
+    m = re.search(r'\{[\s\S]*\}', text)
+    if m:
+        return m.group(0)
+    # 3. 原样返回
+    return text
+
 def process_single_item(chain, parser, item: Dict, language: str) -> Dict:
     def is_sensitive(content: str) -> bool:
         """
@@ -129,7 +142,9 @@ def process_single_item(chain, parser, item: Dict, language: str) -> Dict:
             "language": language,
             "content": item['summary']
         })
-        ai_data = parser.parse(response_text)
+        # 尝试多种方式提取 JSON（模型可能输出额外文本）
+        ai_json = _extract_json(response_text)
+        ai_data = parser.parse(ai_json)
         item['AI'] = ai_data.model_dump()
     except Exception as e:
         print(f"Error for {item.get('id', 'unknown')}: {e}", file=sys.stderr)
