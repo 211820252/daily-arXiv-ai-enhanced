@@ -30,7 +30,7 @@ def parse_args():
     """解析命令行参数"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=str, required=True, help="jsonline data file")
-    parser.add_argument("--max_workers", type=int, default=1, help="Maximum number of parallel workers")
+    parser.add_argument("--max_workers", type=int, default=10, help="Maximum number of parallel workers")
     return parser.parse_args()
 
 def process_single_item(chain, parser, item: Dict, language: str) -> Dict:
@@ -154,6 +154,34 @@ def process_all_items(data: List[Dict], model_name: str, language: str, max_work
     if raw_base and not raw_base.rstrip('/').endswith('/v1'):
         raw_base = raw_base.rstrip('/') + '/v1'
 
+    # 读取偏好分类，用于过滤不相关的论文
+    preferred_categories = set(
+        c.strip() for c in os.environ.get("CATEGORIES", "").split(",") if c.strip()
+    )
+
+    skipped_ai_fields = {
+        "tldr": "Skipped (category not in preferred list)",
+        "motivation": "Skipped (category not in preferred list)",
+        "method": "Skipped (category not in preferred list)",
+        "result": "Skipped (category not in preferred list)",
+        "conclusion": "Skipped (category not in preferred list)"
+    }
+
+    # 分离需要 AI 处理的论文和跳过的论文
+    to_process = []  # (idx, item)
+    for idx, item in enumerate(data):
+        item_categories = set(item.get("categories", []))
+        if preferred_categories and not (item_categories & preferred_categories):
+            # 论文分类不在偏好范围内，跳过 AI 处理
+            data[idx]['AI'] = skipped_ai_fields
+        else:
+            to_process.append((idx, item))
+
+    print(f"Papers matching preferred categories: {len(to_process)} / {len(data)}", file=sys.stderr)
+
+    if not to_process:
+        return data
+
     llm = ChatOpenAI(
         model=model_name,
         openai_api_key=os.environ.get("OPENAI_API_KEY"),
@@ -173,39 +201,36 @@ def process_all_items(data: List[Dict], model_name: str, language: str, max_work
     prompt_template = prompt_template.partial(format_instructions=parser.get_format_instructions())
 
     chain = prompt_template | llm | StrOutputParser()
-    
+
     # 使用线程池并行处理
-    processed_data = [None] * len(data)  # 预分配结果列表
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # 提交所有任务
+        # 只提交需要处理的论文
         future_to_idx = {
             executor.submit(process_single_item, chain, parser, item, language): idx
-            for idx, item in enumerate(data)
+            for idx, item in to_process
         }
-        
+
         # 使用tqdm显示进度
         for future in tqdm(
             as_completed(future_to_idx),
-            total=len(data),
+            total=len(to_process),
             desc="Processing items"
         ):
             idx = future_to_idx[future]
             try:
                 result = future.result()
-                processed_data[idx] = result
+                data[idx] = result
             except Exception as e:
                 print(f"Item at index {idx} generated an exception: {e}", file=sys.stderr)
-                # Add default AI fields to ensure consistency
-                processed_data[idx] = data[idx]
-                processed_data[idx]['AI'] = {
+                data[idx]['AI'] = {
                     "tldr": "Processing failed",
                     "motivation": "Processing failed",
                     "method": "Processing failed",
                     "result": "Processing failed",
                     "conclusion": "Processing failed"
                 }
-    
-    return processed_data
+
+    return data
 
 def main():
     args = parse_args()
