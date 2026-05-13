@@ -154,30 +154,28 @@ def process_all_items(data: List[Dict], model_name: str, language: str, max_work
     if raw_base and not raw_base.rstrip('/').endswith('/v1'):
         raw_base = raw_base.rstrip('/') + '/v1'
 
-    # 读取偏好分类，用于过滤不相关的论文
-    preferred_categories = set(
-        c.strip() for c in os.environ.get("CATEGORIES", "").split(",") if c.strip()
-    )
+    # 读取关键词，用于过滤不相关的论文（检查摘要中是否包含任意关键词）
+    keywords = [k.strip().lower() for k in os.environ.get("KEYWORDS", "").split(",") if k.strip()]
 
     skipped_ai_fields = {
-        "tldr": "Skipped (category not in preferred list)",
-        "motivation": "Skipped (category not in preferred list)",
-        "method": "Skipped (category not in preferred list)",
-        "result": "Skipped (category not in preferred list)",
-        "conclusion": "Skipped (category not in preferred list)"
+        "tldr": "Skipped (no keyword match in abstract)",
+        "motivation": "Skipped (no keyword match in abstract)",
+        "method": "Skipped (no keyword match in abstract)",
+        "result": "Skipped (no keyword match in abstract)",
+        "conclusion": "Skipped (no keyword match in abstract)"
     }
 
     # 分离需要 AI 处理的论文和跳过的论文
     to_process = []  # (idx, item)
     for idx, item in enumerate(data):
-        item_categories = set(item.get("categories", []))
-        if preferred_categories and not (item_categories & preferred_categories):
-            # 论文分类不在偏好范围内，跳过 AI 处理
-            data[idx]['AI'] = skipped_ai_fields
-        else:
-            to_process.append((idx, item))
+        if keywords:
+            summary_lower = (item.get("summary", "") or "").lower()
+            if not any(kw in summary_lower for kw in keywords):
+                data[idx]['AI'] = skipped_ai_fields
+                continue
+        to_process.append((idx, item))
 
-    print(f"Papers matching preferred categories: {len(to_process)} / {len(data)}", file=sys.stderr)
+    print(f"Papers matching keywords: {len(to_process)} / {len(data)}", file=sys.stderr)
 
     if not to_process:
         return data
