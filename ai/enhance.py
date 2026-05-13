@@ -179,11 +179,11 @@ def process_all_items(data: List[Dict], model_name: str, language: str, max_work
         pass
 
     skipped_ai_fields = {
-        "tldr": "Skipped (no keyword match in abstract)",
-        "motivation": "Skipped (no keyword match in abstract)",
-        "method": "Skipped (no keyword match in abstract)",
-        "result": "Skipped (no keyword match in abstract)",
-        "conclusion": "Skipped (no keyword match in abstract)"
+        "tldr": "",
+        "motivation": "",
+        "method": "",
+        "result": "",
+        "conclusion": ""
     }
 
     # 分离需要 AI 处理的论文和跳过的论文
