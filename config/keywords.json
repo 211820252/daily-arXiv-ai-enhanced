@@ -1,10 +1,8 @@
 [
-  "diffusion",
-  "transformer",
-  "segmentation",
-  "3d reconstruction",
-  "image generation",
-  "neural radiance field",
   "reinforcement learning",
-  "large language model"
+  "ppo",
+  "dpo",
+  "grpo",
+  "agent",
+  "tool"
 ]
